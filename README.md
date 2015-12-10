@@ -5,9 +5,10 @@
 
 Preqrequisites:
 
-- You have installed VirtualBox on your machine and it's able to launch a guest VM. (on NixOS use `virtualisation.virtualbox.host.enable = true;`)
+- You have installed VirtualBox on your machine and it's able to launch a guest VM.
+  (on NixOS use `virtualisation.virtualbox.host.enable = true;`)
 
-Install nixops
+Install NixOps
 
     $ nix-env -i nixops
 
@@ -15,12 +16,19 @@ Get the OpenStack NixOS modules
 
     $ git clone -b nixos/openstack --single-branch https://github.com/domenkozar/nixpkgs.git
 
-Deploy the cluster on VirtualBox
+Create NixOps deployment
 
     $ nixops create -d openstack ./openstack.nix ./openstack-vbox.nix
+
+Build the deployment (we have to do it as separate step otherwise VirtualBox/Qemu fight for the driver)
+
+    $ nixops deploy -d openstack -I `pwd` --build-only -j 4
+
+Deploy the cluster on VirtualBox
+
     $ nixops deploy -d openstack -I `pwd`
 
-Inside the virtualbox guest run the bootstrapping script
+Inside the VirtualBox guest run the bootstrapping script (sets up OpenStack resources)
 
     $ nixops ssh -d openstack allinone
     $ source ./bootstrap.sh
