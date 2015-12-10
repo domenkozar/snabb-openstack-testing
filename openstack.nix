@@ -139,7 +139,32 @@
         neutron.enableSingleNode = true;
         nova.enableSingleNode = true;
       };
+      networking.extraHosts = ''
+        127.0.0.1 controller
+        127.0.0.1 allinone
+      '';
 
+
+      # Configure Snabb
+      require = [ ./snabb.nix ];
+      services.snabbswitch.enable = true;
+      services.snabbswitch.ports = [
+        {
+          pci = "0000:84:00.0";
+          node = "1";
+          cpu = "14";
+          portid = "0";
+        }
+        {
+          pci = "0000:84:00.1";
+          node = "1";
+          cpu = "15";
+          portid = "1";
+        }
+      ];
+
+
+      # bridge networking setup
       boot.kernel.sysctl = {
         "net.bridge.bridge-nf-call-arptables" = 1;
         "net.bridge.bridge-nf-call-iptables" = 1;
