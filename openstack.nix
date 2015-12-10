@@ -3,6 +3,10 @@
 
   allinone = { config, pkgs, lib, ... }:
     let
+      sshKeys = pkgs.runCommand "ssh-keys" {} ''
+        mkdir -p $out
+        ${pkgs.openssh}/bin/ssh-keygen -q -N "" -f $out/id_rsa
+      '';
       image =
          (import <nixpkgs/nixos/lib/eval-config.nix> {
            system = builtins.currentSystem;
@@ -16,38 +20,41 @@
                    ln -s vda /dev/xvda
                    ln -s vda1 /dev/xvda1
                  '';
+               users.extraUsers.root.openssh.authorizedKeys.keys = [ (builtins.readFile "${sshKeys}/id_rsa.pub") ];
              }
            ];
          }).config.system.build.novaImage;
     bootstrap_sh = pkgs.writeText "bootstrap-openstack.sh" ''
       set -xe
+
       # Keystone
+
       ## Create a temporary setup account
       export OS_TOKEN=SuperSecreteKeystoneToken
       export OS_URL=http://localhost:35357/v3
       export OS_IDENTITY_API_VERSION=3
-    
+
       ## Register keystone service to itself
       openstack service create --name keystone --description "OpenStack Identity" identity
       openstack endpoint create --region RegionOne identity public http://localhost:5000/v2.0
       openstack endpoint create --region RegionOne identity internal http://localhost:5000/v2.0
       openstack endpoint create --region RegionOne identity admin http://controller:35357/v2.0
-    
+
       ## Create projects, users and roles for admin project
       openstack project create --domain default --description "Admin Project" admin
       openstack user create --domain default --password asdasd admin
       openstack role create admin
       openstack role add --project admin --user admin admin
-    
+
       ## Create service project
       openstack project create --domain default --description "Service Project" service
-    
+
       ## Create projects, users and roles for service project
       openstack project create --domain default --description "Demo Project" demo
       openstack user create --domain default --password asdasd demo
       openstack role create user
       openstack role add --project demo --user demo user
-    
+
       ## Use adming login
       unset OS_TOKEN
       unset OS_URL
@@ -60,10 +67,10 @@
       export OS_AUTH_URL=http://localhost:35357/v3
       export OS_IDENTITY_API_VERSION=3
       export OS_IMAGE_API_VERSION=2
-    
+
       ## Verify
       openstack token issue
-    
+
       # Glance
       openstack user create --domain default --password asdasd glance
       openstack role add --project service --user glance admin
@@ -71,11 +78,11 @@
       openstack endpoint create --region RegionOne image public http://localhost:9292
       openstack endpoint create --region RegionOne image internal http://localhost:9292
       openstack endpoint create --region RegionOne image admin http://localhost:9292
-    
+
       ## Verify
       glance image-create --name "nixos" --file ${image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
       glance image-list
-    
+
       # Nova
       openstack user create --domain default --password asdasd nova
       openstack role add --project service --user nova admin
@@ -83,12 +90,12 @@
       openstack endpoint create --region RegionOne compute public http://localhost:8774/v2/%\(tenant_id\)s
       openstack endpoint create --region RegionOne compute internal http://localhost:8774/v2/%\(tenant_id\)s
       openstack endpoint create --region RegionOne compute admin http://localhost:8774/v2/%\(tenant_id\)s
-    
+
       ## Verify
       nova service-list
       nova endpoints
       nova image-list
-    
+
       # Neutron
       openstack user create --domain default --password asdasd neutron
       openstack role add --project service --user neutron admin
@@ -96,15 +103,15 @@
       openstack endpoint create --region RegionOne network public http://localhost:9696
       openstack endpoint create --region RegionOne network internal http://localhost:9696
       openstack endpoint create --region RegionOne network admin http://localhost:9696
-    
+
       ## Verify
       neutron ext-list
       neutron agent-list
-    
+
       # Create public network
       neutron net-create public --shared --provider:physical_network public --provider:network_type flat
       neutron subnet-create public 203.0.113.0/24 --name public --allocation-pool start=203.0.113.101,end=203.0.113.200 --dns-nameserver 8.8.8.8 --gateway 203.0.113.1
-    
+
       # Use Demo account
       export OS_PROJECT_DOMAIN_ID=default
       export OS_USER_DOMAIN_ID=default
@@ -115,16 +122,17 @@
       export OS_AUTH_URL=http://localhost:5000/v3
       export OS_IDENTITY_API_VERSION=3
       export OS_IMAGE_API_VERSION=2
-    
+
       # Launch an instance
-      ssh-keygen -q -N "" -f id_rsa
-      nova keypair-add --pub-key id_rsa.pub mykey
+      nova keypair-add --pub-key ${sshKeys}/id_rsa.pub mykey
+      cp ${sshKeys}/id_rsa /root/
       nova keypair-list
       nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
       nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
       nova boot --flavor m1.tiny --image nixos --security-group default --key-name mykey public-instance
     '';
     in {
+      # Configure OpenStack
       virtualisation = {
         keystone.enableSingleNode = true;
         glance.enableSingleNode = true;
@@ -141,22 +149,36 @@
       };
       boot.kernelModules = [ "br_netfilter" ];
 
-      networking.extraHosts = ''
-        127.0.0.1 controller
-      '';
+      # bridge networking uses dhcp https://github.com/NixOS/nixpkgs/issues/10101
+      networking.firewall.enable = false;
+
 
       environment.systemPackages = with pkgs.pythonPackages; with pkgs; [
-        vim openstackclient novaclient glanceclient keystoneclient neutronclient
-        # https://github.com/NixOS/nixpkgs/issues/7307#issuecomment-159341755
-        # TODO: patch monotonic
+        # OpenStack clients
+        openstackclient novaclient glanceclient keystoneclient neutronclient
+        # TODO: patch monotonic https://github.com/NixOS/nixpkgs/issues/7307#issuecomment-159341755
         binutils gcc
+        # activationScripts
+        iproute nettools
         # brctl
         bridge-utils
+        # debugging
+        iptables tcpdump ebtables vim
       ];
- 
+
       system.activationScripts.openstack = ''
         cp ${bootstrap_sh} /root/bootstrap.sh
         chmod +x /root/bootstrap.sh
+
+        # copy over ssh keys for e
+        mkdir /root/.ssh/
+        chmod 700 /root/.ssh
+        cp ${sshKeys}/id_rsa /root/.ssh/
+        chmod 700 /root/.ssh/id_rsa
+
+        # TODO: configure bridge networking on the host
+        #ip link add eth1 type veth peer name eth2
+        #ifconfig eth2 203.0.113.1 up
       '';
     };
 }
