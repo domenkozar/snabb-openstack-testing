@@ -23,7 +23,7 @@ let
     '';
 
   };
-  snabb_dump_path = "/var/lib/snabb/";
+  snabb_dump_path = "/var/lib/snabb/sync";
   cfg = config.services.snabbswitch;
 in {
   options.services.snabbswitch = {
@@ -110,9 +110,8 @@ in {
         wantedBy = [ "multi-user.target" ];
         environment = {
           NEUTRON_DIR = "/var/lib/neutron";
-          SNABB_DIR = snabb_dump_path;
           NEUTRON2SNABB = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron2snabb";
-          SYNC_PATH = "";
+          SYNC_PATH = "sync";
           SYNC_HOST = "127.0.0.1";
         };
         serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-agent";
