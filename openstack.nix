@@ -196,7 +196,7 @@
         chmod +x /root/bootstrap.sh
 
         # copy over ssh keys for e
-        mkdir /root/.ssh/
+        mkdir -p /root/.ssh/
         chmod 700 /root/.ssh
         cp ${sshKeys}/id_rsa /root/.ssh/
         chmod 700 /root/.ssh/id_rsa
