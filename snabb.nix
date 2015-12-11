@@ -84,7 +84,8 @@ in {
             description = "";
             after = [ "snabb-neutron-sync-master.service" ];
             wantedBy = [ "multi-user.target" ];
-            serviceConfig.ExecStart = "${pkgs.utillinux}/bin/taskset -c ${portspec.cpu} ${pkgs.snabbswitch}/bin/snabb snabbnfv traffic pci=${portspec.pci} node=${portspec.node} cpu=${portspec.cpu} portid=${portspec.portid}";
+            # TODO: taskset/numa
+            serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv traffic pci=${portspec.pci} node=${portspec.node} cpu=${portspec.cpu} portid=${portspec.portid}";
             # https://github.com/SnabbCo/snabbswitch/blob/master/src/program/snabbnfv/doc/installation.md#traffic-restarts
             serviceConfig.Restart = "on-failure";
           };
