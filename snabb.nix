@@ -5,7 +5,7 @@
 with lib;
 
 let
-  snabb-neutron = pkgs.buildPythonPackage {
+  snabb-neutron = with pkgs.pythonPackages; buildPythonPackage {
     name = "snabb-neutron-2015-12-09";
 
     src = pkgs.fetchFromGitHub {
@@ -15,7 +15,12 @@ let
       sha256 = "0dc7gyh1j8956m0285csycaaxi2hj2yv7jkyirhfkblfparafyck";
     };
 
+    buildInputs = [ pytest ];
     propagatedBuildInputs = [ pkgs.neutron ];
+
+    preCheck = ''
+      py.test -v snabb_neutron/tests/
+    '';
 
   };
   snabb_dump_path = "/var/lib/snabb/";
