@@ -189,6 +189,8 @@
         bridge-utils
         # debugging
         iptables tcpdump ebtables vim
+        # needed by tests
+        jshon
       ];
 
       system.activationScripts.openstack = ''
