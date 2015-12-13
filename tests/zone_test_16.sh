@@ -97,7 +97,7 @@ if [[ ! -z "$IMAGE" ]]; then
 fi
 
 #add the image
-glance image-create --name "$DEFAULT_IMAGE_NAME" --is-public True --disk-format qcow2 --container-format bare --file "$DEFAULT_IMAGE_FILE"
+glance image-create --name "$DEFAULT_IMAGE_NAME" --visibility public --disk-format qcow2 --container-format bare --file "$DEFAULT_IMAGE_FILE"
 
 # List the images available
 glance image-list

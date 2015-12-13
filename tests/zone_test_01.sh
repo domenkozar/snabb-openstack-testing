@@ -73,7 +73,7 @@ if [[ ! -z "$IMAGE" ]]; then
 fi
 
 #add the image
-glance image-create --name "$DEFAULT_IMAGE_NAME" --is-public True --disk-format qcow2 --container-format bare --file "$DEFAULT_IMAGE_FILE"
+glance image-create --name "$DEFAULT_IMAGE_NAME" --visibility public --disk-format qcow2 --container-format bare --file "$DEFAULT_IMAGE_FILE"
 
 # List the images available
 glance image-list
@@ -129,14 +129,9 @@ IP=$(get_and_ping_ip $VM_UUID)
 # Clean up
 # --------
 
-# Delete instance
 delete_instance $VM_UUID
-
-# Delete net
 delete_net $ZONE_NET_NAME1
-
-# Delete secgroup
-nova secgroup-delete $SECGROUP || die $LINENO "Failure deleting security group $SECGROUP"
+nova secgroup-delete $SECGROUP
 
 set +o xtrace
 echo "*********************************************************************"
