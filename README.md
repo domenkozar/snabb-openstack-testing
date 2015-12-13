@@ -50,4 +50,4 @@ Tests can be executed inside a docker container. Docker container ships with all
 
 ## Run the tests
 
-    $ docker run --rm -privileged -ti --e SNABB_PCI0="" -e SNABB_PCI1="" domenkozar/snabb-openstack-testing
+    $ docker run --rm -privileged -ti --e SNABB_PCI0="84:00.0" -e SNABB_PCI1="84:00.1" domenkozar/snabb-openstack-testing

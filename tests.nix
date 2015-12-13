@@ -11,9 +11,9 @@ makeTest {
       require = [ (import ./openstack.nix).allinone ];
       virtualisation.memorySize = 2560;
       virtualisation.diskSize = 2 * 1024;
-      virtualisation.qemu.options = [
-        "-device pci-assign,host=84:00.0,addr=0x15"
-        "-device pci-assign,host=84:00.1,addr=0x16"
+      virtualisation.qemu.options = optionals (builtins.getEnv "SKIP_PCI" == "") [
+        "-device pci-assign,host=${builtins.getEnv "SNABB_PCI0"},addr=0x15"
+        "-device pci-assign,host=${builtins.getEnv "SNABB_PCI1"},addr=0x16"
       ];
     };
   };
