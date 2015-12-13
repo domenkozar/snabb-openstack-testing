@@ -24,6 +24,14 @@
              }
            ];
          }).config.system.build.novaImage;
+    ubuntuImage = pkgs.fetchurl {
+      url = "http://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img";
+      sha256 = "1xv5fhjivzmi2pramqy2qzsbbyp831r112fq251lmgky61fbj7la";
+    };
+    centosImage = pkgs.fetchurl {
+      url = "http://cloud.centos.org/centos/7/devel/CentOS-7-x86_64-GenericCloud.qcow2";
+      sha256 = "08i9pp6bw6q649dzc6sz5ddn895h00g5xf577fzhps6qksc0kzr4";
+    };
     bootstrap_sh = pkgs.writeText "bootstrap-openstack.sh" ''
       set -xe
 
@@ -192,7 +200,9 @@
       system.activationScripts.openstack = ''
         cp ${bootstrap_sh} /root/bootstrap.sh
         chmod +x /root/bootstrap.sh
-        cp -R ${./tests} tests
+        cp -R ${./tests} /root/tests
+        cp ${ubuntuImage} /root/tests/
+        cp ${centosImage} /root/tests/
 
         # copy over ssh keys 
         mkdir -p /root/.ssh/

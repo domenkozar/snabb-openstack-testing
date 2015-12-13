@@ -31,7 +31,7 @@ INSTANCE_TYPE=m1.zone
 
 # Boot this image
 DEFAULT_IMAGE_NAME="Ubuntu 14.04"
-DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TOP_DIR/trusty-server-cloudimg-amd64-disk1.img"}
+DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TESTS_DIR/trusty-server-cloudimg-amd64-disk1.img"}
 
 # Security group name
 SECGROUP=${SECGROUP:-test_secgroup}
