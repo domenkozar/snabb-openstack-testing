@@ -55,7 +55,7 @@
       openstack role create user
       openstack role add --project demo --user demo user
 
-      ## Use adming login
+      ## Use admin login
       unset OS_TOKEN
       unset OS_URL
       export OS_PROJECT_DOMAIN_ID=default

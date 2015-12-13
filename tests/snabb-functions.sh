@@ -1,22 +1,29 @@
 # functions-zone - Common functions used by DevStack components
 
-OS_USERNAME="admin"
-OS_TENANT_NAME="demo"
+
+# Grab a numbered field from python prettytable output
+# Fields are numbered starting with 1
+# Reverse syntax is supported: -1 is the last field, -2 is second to last, etc.
+# get_field field-number
+function get_field {
+    while read data; do
+        if [ "$1" -lt 0 ]; then
+            field="(\$(NF$1))"
+        else
+            field="\$$(($1 + 1))"
+        fi
+        echo "$data" | awk -F'[ \t]*\\|[ \t]*' "{print $field}"
+    done
+}
+
 
 function zone_prereq {
-    if is_ubuntu; then
-        is_package_installed jshon || install_package jshon
-    else
-        exit_distro_not_supported "jshon installation"
-    fi
-
     # create the flavor
     if [[ ! $(nova flavor-list | grep $INSTANCE_TYPE | get_field 1) ]]; then
         nova flavor-create $INSTANCE_TYPE 999 1024 10 1
     fi
 
     nova flavor-key $INSTANCE_TYPE set hw:mem_page_size=large
-    nova keypair-delete SSH_KEY || true
     nova keypair-add --pub_key ~/.ssh/id_rsa.pub SSH_KEY
 }
 

@@ -17,23 +17,14 @@ set -o xtrace
 # ========
 
 # Keep track of the current directory
-EXERCISE_DIR=$(cd $(dirname "$0") && pwd)
-TOP_DIR=$(cd $EXERCISE_DIR/..; pwd)
+TESTS_DIR=$(cd $(dirname "$0") && pwd)
 
-# Import common functions
-source $TOP_DIR/functions
+# Import OpenStack credentials
+source $TESTS_DIR/openstack-admin.sh
 
 # Import zone functions
-source $TOP_DIR/functions-zone
+source $TESTS_DIR/snabb-functions.sh
 
-# Import configuration
-source $TOP_DIR/openrc
-
-# Import project functions
-source $TOP_DIR/lib/neutron
-
-# Import exercise configuration
-source $TOP_DIR/exerciserc
 
 # Instance type to create
 INSTANCE_TYPE=m1.zone
@@ -145,8 +136,7 @@ delete_instance $VM_UUID
 delete_net $ZONE_NET_NAME1
 
 # Delete secgroup
-nova secgroup-delete $SECGROUP || \
-    die $LINENO "Failure deleting security group $SECGROUP"
+nova secgroup-delete $SECGROUP || die $LINENO "Failure deleting security group $SECGROUP"
 
 set +o xtrace
 echo "*********************************************************************"
