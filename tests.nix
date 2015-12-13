@@ -11,7 +11,10 @@ makeTest {
       require = [ (import ./openstack.nix).allinone ];
       virtualisation.memorySize = 2560;
       virtualisation.diskSize = 2 * 1024;
-      virtualisation.qemu.options = ["-device pci-assign,host=84:00.1"];
+      virtualisation.qemu.options = [
+        "-device pci-assign,host=84:00.0,addr=0x15"
+        "-device pci-assign,host=84:00.1,addr=0x16"
+      ];
     };
   };
 
