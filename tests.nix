@@ -31,7 +31,8 @@ makeTest {
     # setup openstack resources
     $allinone->execute('source bootstrap.sh')
 
-    # run the first test
-    $allinone->execute('./tests/zone_test_01.sh')
+    subtest "VM with NIC ", sub {
+      $allinone->execute('./tests/zone_test_01.sh')
+    }
   '';
 }
