@@ -23,5 +23,15 @@ makeTest {
     $allinone->waitForUnit("glance-api.service");
     $allinone->waitForUnit("neutron-server.service");
     $allinone->waitForUnit("nova-api.service");
+
+    # finish bridge networking on the host
+    $allinone->execute('ip link add eth1 type veth peer name eth2')
+    $allinone->execute('ifconfig eth2 203.0.113.1 up')'
+
+    # setup openstack resources
+    $allinone->execute('source bootstrap.sh')
+
+    # run the first test
+    $allinone->execute('./tests/zone_test_01.sh')
   '';
 }

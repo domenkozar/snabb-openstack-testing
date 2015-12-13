@@ -196,16 +196,14 @@
       system.activationScripts.openstack = ''
         cp ${bootstrap_sh} /root/bootstrap.sh
         chmod +x /root/bootstrap.sh
+        cp -R ${./tests} tests
 
         # copy over ssh keys for e
         mkdir -p /root/.ssh/
         chmod 700 /root/.ssh
         cp ${sshKeys}/id_rsa /root/.ssh/
         chmod 700 /root/.ssh/id_rsa
-
-        # TODO: configure bridge networking on the host
-        #ip link add eth1 type veth peer name eth2
-        #ifconfig eth2 203.0.113.1 up
+        cp ${sshKeys}/id_rsa.pub /root/.ssh/
       '';
     };
 }
