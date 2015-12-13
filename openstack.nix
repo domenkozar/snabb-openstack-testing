@@ -187,8 +187,6 @@
       environment.systemPackages = with pkgs.pythonPackages; with pkgs; [
         # OpenStack clients
         openstackclient novaclient glanceclient keystoneclient neutronclient
-        # TODO: patch monotonic https://github.com/NixOS/nixpkgs/issues/7307#issuecomment-159341755
-        binutils gcc
         # activationScripts
         iproute nettools bridge-utils
         # debugging
