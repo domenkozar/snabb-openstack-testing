@@ -112,7 +112,7 @@
       neutron net-create public --shared --provider:physical_network public --provider:network_type flat
       neutron subnet-create public 203.0.113.0/24 --name public --allocation-pool start=203.0.113.101,end=203.0.113.200 --dns-nameserver 8.8.8.8 --gateway 203.0.113.1
 
-      # Use Demo account
+      ## Use Demo account
       export OS_PROJECT_DOMAIN_ID=default
       export OS_USER_DOMAIN_ID=default
       export OS_PROJECT_NAME=demo
@@ -123,13 +123,12 @@
       export OS_IDENTITY_API_VERSION=3
       export OS_IMAGE_API_VERSION=2
 
-      # Launch an instance
+      ## Launch an instance
       nova keypair-add --pub-key ${sshKeys}/id_rsa.pub mykey
-      cp ${sshKeys}/id_rsa /root/
       nova keypair-list
       nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
       nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
-      nova boot --flavor m1.tiny --image nixos --security-group default --key-name mykey public-instance
+      #nova boot --flavor m1.tiny --image nixos --security-group default --key-name mykey public-instance
     '';
     in {
       # Configure OpenStack
@@ -143,7 +142,6 @@
         127.0.0.1 controller
         127.0.0.1 allinone
       '';
-
 
       # Configure Snabb
       require = [ ./snabb.nix ];
@@ -184,9 +182,7 @@
         # TODO: patch monotonic https://github.com/NixOS/nixpkgs/issues/7307#issuecomment-159341755
         binutils gcc
         # activationScripts
-        iproute nettools
-        # brctl
-        bridge-utils
+        iproute nettools bridge-utils
         # debugging
         iptables tcpdump ebtables vim
         # needed by tests
