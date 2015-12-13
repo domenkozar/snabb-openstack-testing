@@ -184,7 +184,7 @@
         # activationScripts
         iproute nettools bridge-utils
         # debugging
-        iptables tcpdump ebtables vim
+        iptables tcpdump ebtables vim pciutils
         # needed by tests
         jshon
       ];
