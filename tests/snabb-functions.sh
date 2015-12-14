@@ -1,37 +1,8 @@
 # functions-zone - Common functions used by DevStack components
 
 
-# Checks an environment variable is not set or has length 0 OR if the
-# exit code is non-zero and prints "message" and exits
-# NOTE: env-var is the variable name without a '$'
-# die_if_not_set $LINENO env-var "message"
-function die_if_not_set {
-    local exitcode=$?
-    FXTRACE=$(set +o | grep xtrace)
-    set +o xtrace
-    local line=$1; shift
-    local evar=$1; shift
-    if ! is_set $evar || [ $exitcode != 0 ]; then
-        die $line "$*"
-    fi
-    $FXTRACE
-}
-
-
-# Grab a numbered field from python prettytable output
-# Fields are numbered starting with 1
-# Reverse syntax is supported: -1 is the last field, -2 is second to last, etc.
-# get_field field-number
-function get_field {
-    while read data; do
-        if [ "$1" -lt 0 ]; then
-            field="(\$(NF$1))"
-        else
-            field="\$$(($1 + 1))"
-        fi
-        echo "$data" | awk -F'[ \t]*\\|[ \t]*' "{print $field}"
-    done
-}
+# get all helper functions in scope
+source ./functions-common.sh
 
 
 function zone_prereq {
