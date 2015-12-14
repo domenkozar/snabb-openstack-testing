@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# **zone_test_18.sh** - 2xVM with security gorup restrictions and stateless filtering
+# **zone_test_18.sh** - 2xVM with security group restrictions and stateless filtering
 
 # Test instance connectivity with the ``nova`` command from ``python-novaclient``
 

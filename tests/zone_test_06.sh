@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# **zone_test_6.sh** - 2xVM with security gorup restrictions
+# **zone_test_6.sh** - 2xVM with security group restrictions
 
 # Test instance connectivity with the ``nova`` command from ``python-novaclient``
 

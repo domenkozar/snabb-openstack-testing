@@ -54,7 +54,7 @@ makeTest {
       $allinone->execute('/root/tests/zone_test_05.sh');
     }
 
-    subtest "2xVM with security gorup restrictions", sub {
+    subtest "2xVM with security group restrictions", sub {
       $allinone->execute('/root/tests/zone_test_06.sh');
     }
 
@@ -102,7 +102,7 @@ makeTest {
       $allinone->execute('/root/tests/zone_test_17.sh');
     }
 
-    subtest "2xVM with security gorup restrictions and stateless filtering", sub {
+    subtest "2xVM with security group restrictions and stateless filtering", sub {
       $allinone->execute('/root/tests/zone_test_18.sh');
     }
   '';
