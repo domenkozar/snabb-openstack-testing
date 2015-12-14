@@ -156,13 +156,13 @@
       services.snabbswitch.enable = true;
       services.snabbswitch.ports = [
         {
-          pci = "0000:84:00.0";
+          pci = "0000:00:15.0";
           node = "1";
           cpu = "14";
           portid = "0";
         }
         {
-          pci = "0000:84:00.1";
+          pci = "0000:00:16.0";
           node = "1";
           cpu = "15";
           portid = "1";
