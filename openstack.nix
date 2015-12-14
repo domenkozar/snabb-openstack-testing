@@ -201,8 +201,8 @@
         cp ${bootstrap_sh} /root/bootstrap.sh
         chmod +x /root/bootstrap.sh
         cp -R ${./tests} /root/tests
-        cp ${ubuntuImage} /root/tests/
-        cp ${centosImage} /root/tests/
+        cp ${ubuntuImage} /root/tests/trusty-server-cloudimg-amd64-disk1.img
+        cp ${centosImage} /root/tests/CentOS-7-x86_64-GenericCloud.qcow2
 
         # copy over ssh keys 
         mkdir -p /root/.ssh/
