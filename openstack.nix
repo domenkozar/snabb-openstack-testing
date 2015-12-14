@@ -62,6 +62,8 @@
       openstack user create --domain default --password asdasd demo
       openstack role create user
       openstack role add --project demo --user demo user
+      # Allow demo to add private flavors, see https://github.com/dianaclarke/openstack-notes/wiki/openstack-flavors
+      openstack role add --user demo --project demo admin
 
       ## Use admin login
       unset OS_TOKEN

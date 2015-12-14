@@ -20,7 +20,7 @@ set -o xtrace
 TESTS_DIR=$(cd $(dirname "$0") && pwd)
 
 # Import OpenStack credentials
-source $TESTS_DIR/openstack-admin.sh
+source $TESTS_DIR/openstack-demo-user.sh
 
 # Import zone functions
 source $TESTS_DIR/snabb-functions.sh
