@@ -88,7 +88,7 @@
       openstack endpoint create --region RegionOne image admin http://localhost:9292
 
       ## Verify
-      glance image-create --name "nixos" --file ${image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
+      #glance image-create --name "nixos" --file ${image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
       glance image-list
 
       # Nova
