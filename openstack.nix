@@ -146,6 +146,10 @@
         keystone.enableSingleNode = true;
         glance.enableSingleNode = true;
         neutron.enableSingleNode = true;
+        neutron.extraML2Config = ''
+          [ml2_snabb]
+          zone_definition_file = ${./ml2_zones.conf}
+        '';
         nova.enableSingleNode = true;
       };
       networking.extraHosts = ''
