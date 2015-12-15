@@ -79,7 +79,7 @@
       export OS_IMAGE_API_VERSION=2
 
       ## Verify
-      openstack token issue
+      #openstack token issue
 
       # Glance
       openstack user create --domain default --password asdasd glance
@@ -91,7 +91,7 @@
 
       ## Verify
       #glance image-create --name "nixos" --file ${image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
-      glance image-list
+      #glance image-list
 
       # Nova
       openstack user create --domain default --password asdasd nova
@@ -102,9 +102,9 @@
       openstack endpoint create --region RegionOne compute admin http://localhost:8774/v2/%\(tenant_id\)s
 
       ## Verify
-      nova service-list
-      nova endpoints
-      nova image-list
+      #nova service-list
+      #nova endpoints
+      #nova image-list
 
       # Neutron
       openstack user create --domain default --password asdasd neutron
@@ -115,8 +115,8 @@
       openstack endpoint create --region RegionOne network admin http://localhost:9696
 
       ## Verify
-      neutron ext-list
-      neutron agent-list
+      #neutron ext-list
+      #neutron agent-list
 
       # Create public network
       neutron net-create public --shared --provider:physical_network public --provider:network_type flat
@@ -135,7 +135,7 @@
 
       ## Launch an instance
       nova keypair-add --pub-key ${sshKeys}/id_rsa.pub mykey
-      nova keypair-list
+      #nova keypair-list
       nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
       nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
       #nova boot --flavor m1.tiny --image nixos --security-group default --key-name mykey public-instance
