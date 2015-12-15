@@ -1,7 +1,31 @@
 [Snabb Switch](https://github.com/SnabbCo/snabbswitch) functional testing suite for [OpenStack](https://www.openstack.org/) integration using [NixOS](http://nixos.org/)
 
 
-# Running tests
+# Running tests (with Docker)
+
+Tests can be executed inside a docker container. Docker container ships with all software needed for tests execution.
+
+Docker runs NixOS tests in QEMU machine with OpenStack installed.
+
+Preqrequisites:
+
+- pass `intel_iommu=on` as kernel parameter on host machine where tests are being ran.
+
+
+## Run the tests
+
+    $ docker run --rm --privileged -ti -e SNABB_PCI0="84:00.0" -e SNABB_PCI1="84:00.1" domenkozar/snabb-openstack-testing
+
+
+# Development
+
+## Build and publish Docker image
+
+    $ docker build -t domenkozar/snabb-openstack-testing .
+    $ docker push domenkozar/snabb-openstack-testing
+
+
+## Debugging tests
 
 Preqrequisites:
 
@@ -36,18 +60,4 @@ Deploy the cluster on VirtualBox
 Inside the VirtualBox guest run the bootstrapping script (sets up OpenStack resources)
 
     $ nixops ssh -d openstack allinone
-    $ source ./bootstrap.sh
-
-
-# Docker
-
-Tests can be executed inside a docker container. Docker container ships with all software needed for tests execution.
-
-## Build and publish the image
-
-    $ docker build -t domenkozar/snabb-openstack-testing .
-    $ docker push domenkozar/snabb-openstack-testing
-
-## Run the tests
-
-    $ docker run --rm -privileged -ti --e SNABB_PCI0="84:00.0" -e SNABB_PCI1="84:00.1" domenkozar/snabb-openstack-testing
+    $ source /root/bootstrap.sh
