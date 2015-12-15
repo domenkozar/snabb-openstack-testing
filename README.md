@@ -10,6 +10,7 @@ Docker runs NixOS tests in QEMU machine with OpenStack installed.
 Preqrequisites:
 
 - pass `intel_iommu=on` as kernel parameter on host machine where tests are being ran.
+- PCI devices are not assigned (`rmmod ixgbe`)
 
 
 ## Run the tests
