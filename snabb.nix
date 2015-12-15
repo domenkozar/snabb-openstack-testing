@@ -11,8 +11,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "SnabbCo";
       repo = "snabb-neutron";
-      rev = "cc811f865017ae47434aa95f01f5631d5e5303a6";
-      sha256 = "0bcycpjhvr6wmjikh1hgg2hfcwyq6h8fm8nyvcc0i4qb29wzaxly";
+      rev = "363f1c3ed5efc91b7b392a1ca71b801bd6a9fd6c";
+      sha256 = "1ggdi1bxkzvrbck365mx5wwkrqd7346z8v71f9ipybpw2iarrv4x";
     };
 
     buildInputs = [ pytest ];
