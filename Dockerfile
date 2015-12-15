@@ -3,8 +3,8 @@ FROM nixos/nix
 WORKDIR /snabb
 ADD . /snabb
 
+RUN nix-build -Q -A driver tests.nix -I .
 RUN rm -rf .git
-RUN nix-build -A driver tests.nix -I .
 
-ENTRYPOINT mount -t hugetlbfs none /hugetlbfs \
-  && nix-build tests.nix
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
