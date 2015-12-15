@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-# **zone_test_13.sh** - 2xVM on different physical port, restart snabb services
-
-# Test instance connectivity with the ``nova`` command from ``python-novaclient``
 
 echo "*********************************************************************"
-echo "Begin DevStack Exercise: $0"
+echo "Begin DevStack Exercise: 2xVM on different physical port, restart snabb services ($0)"
 echo "*********************************************************************"
 
 # This script exits on an error so that errors don't compound and you see
@@ -20,28 +17,18 @@ set -o xtrace
 # Settings
 # ========
 
-# Keep track of the current directory
-EXERCISE_DIR=$(cd $(dirname "$0") && pwd)
-TOP_DIR=$(cd $EXERCISE_DIR/..; pwd)
 
-# Import common functions
-source $TOP_DIR/functions
+# Keep track of the current directory
+TESTS_DIR=$(cd $(dirname "$0") && pwd)
+
+# Import OpenStack credentials
+source $TESTS_DIR/openstack-demo-user.sh
+
+# Get all helper functions in scope
+source $TESTS_DIR/functions-common.sh
 
 # Import zone functions
-source $TOP_DIR/functions-zone
-
-# Import configuration
-source $TOP_DIR/openrc
-
-# Import project functions
-source $TOP_DIR/lib/neutron
-
-# Import exercise configuration
-source $TOP_DIR/exerciserc
-
-# If nova api is not enabled we exit with exitcode 55 so that
-# the exercise is skipped
-is_service_enabled n-api || exit 55
+source $TESTS_DIR/snabb-functions.sh
 
 # Instance type to create
 INSTANCE_TYPE=m1.zone
@@ -49,7 +36,7 @@ INSTANCE_TYPE=m1.zone
 # Boot this image
 #DEFAULT_IMAGE_NAME=${DEFAULT_IMAGE_NAME:-"Ubuntu 14.04"}
 DEFAULT_IMAGE_NAME="Ubuntu 14.04"
-DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TOP_DIR/trusty-server-cloudimg-amd64-disk1.img"}
+DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TESTS_DIR/trusty-server-cloudimg-amd64-disk1.img"}
 
 # Security group name
 SECGROUP=${SECGROUP:-test_secgroup}
@@ -76,9 +63,6 @@ PING_TIMEOUT=60
 
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
-
-# Cells does not support floating ips API calls
-is_service_enabled n-cell && exit 55
 
 # Launching a server
 # ==================
@@ -168,14 +152,14 @@ ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c10 $ZONE_IP1"
 
 # restart snabbswitch services
-sudo stop snabbswitch-sync-master
-sudo start snabbswitch-sync-master
-sudo stop snabbswitch-sync-agent
-sudo start snabbswitch-sync-agent
-sudo stop snabbswitch-traffic-agent portid=0
-sudo start snabbswitch-traffic-agent pci=$TRAFFIC_PCI1 node=$TRAFFIC_NODE1 cpu=$TRAFFIC_CPU1 portid=0
-sudo stop snabbswitch-traffic-agent portid=1
-sudo start snabbswitch-traffic-agent pci=$TRAFFIC_PCI2 node=$TRAFFIC_NODE2 cpu=$TRAFFIC_CPU2 portid=1
+systemctl stop snabb-neutron-sync-master
+systemctl stop snabb-neutron-sync-agent
+systemctl stop snabb-nfv-traffic-0
+systemctl stop snabb-nfv-traffic-1
+systemctl start snabb-neutron-sync-master
+systemctl start snabb-neutron-sync-agent
+systemctl start snabb-nfv-traffic-0
+systemctl start snabb-nfv-traffic-1
 sleep 10
 
 # check connectivity

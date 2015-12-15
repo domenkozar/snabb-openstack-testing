@@ -1,17 +1,68 @@
 # functions-zone - Common functions used by DevStack components
 
+TERMINATE_TIMEOUT=120
+ASSOCIATE_TIMEOUT=120
+PRIVATE_NETWORK_NAME="public"
 
-# get all helper functions in scope
-source ./functions-common.sh
+# Some of these functions were copied from DevStack source
+
+function ping_check {
+    local from_net=$1
+    local ip=$2
+    local timeout_sec=$3
+    local expected=${4:-"True"}
+    local check_command=""
+    probe_cmd=`_get_probe_cmd_prefix $from_net`
+    if [[ "$expected" = "True" ]]; then
+        check_command="while ! $probe_cmd ping -w 1 -c 1 $ip; do sleep 1; done"
+    else
+        check_command="while $probe_cmd ping -w 1 -c 1 $ip; do sleep 1; done"
+    fi
+    if ! timeout $timeout_sec sh -c "$check_command"; then
+        if [[ "$expected" = "True" ]]; then
+            die $LINENO "[Fail] Couldn't ping server"
+        else
+            die $LINENO "[Fail] Could ping server"
+        fi
+    fi
+}
+
+
+function _get_net_id {
+    neutron net-list | grep $1 | awk '{print $2}'
+}
+
+function _get_probe_cmd_prefix {
+    local from_net="$1"
+    net_id=`_get_net_id $from_net`
+    probe_id=`neutron-debug probe-list -c id -c network_id | grep $net_id | awk '{print $2}' | head -n 1`
+    echo "ip netns exec qprobe-$probe_id"
+}
+
+
+# Get ip of instance
+function get_instance_ip {
+    local vm_id=$1
+    local network_name=$2
+    local nova_result="$(nova show $vm_id)"
+    local ip=$(echo "$nova_result" | grep "$network_name" | get_field 2)
+    if [[ $ip = "" ]];then
+        echo "$nova_result"
+        die $LINENO "[Fail] Coudn't get ipaddress of VM"
+    fi
+    echo $ip
+}
 
 
 function zone_prereq {
     # create the flavor
     if [[ ! $(nova flavor-list | grep $INSTANCE_TYPE | get_field 1) ]]; then
-        nova flavor-create $INSTANCE_TYPE 999 1024 10 1
+        nova flavor-create $INSTANCE_TYPE 999 1024 3 1
     fi
-
     nova flavor-key $INSTANCE_TYPE set hw:mem_page_size=large
+    nova flavor-key $INSTANCE_TYPE set hw:numa_nodes=1
+
+    nova keypair-delete SSH_KEY || true
     nova keypair-add --pub_key ~/.ssh/id_rsa.pub SSH_KEY
 }
 
@@ -221,7 +272,7 @@ function get_zone_port_ip {
     # remove prefix/suffis double quote
     zone_port_ip="${zone_port_ip%\"}"
     zone_port_ip="${zone_port_ip#\"}"
-    
+
     echo $zone_port_ip
 }
 

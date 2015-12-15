@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 
-# **zone_test_18.sh** - 2xVM with security group restrictions and stateless filtering
-
-# Test instance connectivity with the ``nova`` command from ``python-novaclient``
 
 echo "*********************************************************************"
-echo "Begin DevStack Exercise: $0"
+echo "Begin DevStack Exercise: 2xVM with security group restrictions and stateless filtering ($0)"
 echo "*********************************************************************"
 
 # This script exits on an error so that errors don't compound and you see
@@ -20,28 +17,18 @@ set -o xtrace
 # Settings
 # ========
 
-# Keep track of the current directory
-EXERCISE_DIR=$(cd $(dirname "$0") && pwd)
-TOP_DIR=$(cd $EXERCISE_DIR/..; pwd)
 
-# Import common functions
-source $TOP_DIR/functions
+# Keep track of the current directory
+TESTS_DIR=$(cd $(dirname "$0") && pwd)
+
+# Import OpenStack credentials
+source $TESTS_DIR/openstack-demo-user.sh
+
+# Get all helper functions in scope
+source $TESTS_DIR/functions-common.sh
 
 # Import zone functions
-source $TOP_DIR/functions-zone
-
-# Import configuration
-source $TOP_DIR/openrc
-
-# Import project functions
-source $TOP_DIR/lib/neutron
-
-# Import exercise configuration
-source $TOP_DIR/exerciserc
-
-# If nova api is not enabled we exit with exitcode 55 so that
-# the exercise is skipped
-is_service_enabled n-api || exit 55
+source $TESTS_DIR/snabb-functions.sh
 
 # Instance type to create
 INSTANCE_TYPE=m1.zone
@@ -49,7 +36,7 @@ INSTANCE_TYPE=m1.zone
 # Boot this image
 #DEFAULT_IMAGE_NAME=${DEFAULT_IMAGE_NAME:-"Ubuntu 14.04"}
 DEFAULT_IMAGE_NAME="Ubuntu 14.04"
-DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TOP_DIR/trusty-server-cloudimg-amd64-disk1.img"}
+DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TESTS_DIR/trusty-server-cloudimg-amd64-disk1.img"}
 
 # Security group name
 SECGROUP=${SECGROUP:-test_secgroup}
@@ -72,8 +59,6 @@ PING_TIMEOUT=60
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 
-# Cells does not support floating ips API calls
-is_service_enabled n-cell && exit 55
 
 # Launching a server
 # ==================
@@ -192,7 +177,7 @@ if ! ip_execute_cmd $IP2 "echo \"Test\" | nc -v $ZONE_IP1 $SERVER_PORT"; then
     die $LINENO "Failure port should be reachable"
 fi
 
-#disable statefull filtering
+# disable statefull filtering
 neutron port-update $ZONE_PORT_ID1 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,packetfilter=stateless
 neutron port-update $ZONE_PORT_ID2 \
@@ -209,7 +194,7 @@ delete_sec_rule $SEC_RULE_UUID
 # --------
 
 # kill pending ssh connection
-sudo kill -9 $SERVER_PID > /dev/null || true
+kill -9 $SERVER_PID > /dev/null || true
 
 
 # Delete instance
