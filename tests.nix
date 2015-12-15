@@ -23,11 +23,18 @@ makeTest {
 
     # wait for all services to start
     $allinone->waitForUnit("keystone-all.service");
+    $allinone->waitForOpenPort(35357);
+    $allinone->waitForOpenPort(5000);
     $allinone->waitForUnit("glance-api.service");
+    $allinone->waitForOpenPort(9191);
+    $allinone->waitForOpenPort(9292);
     $allinone->waitForUnit("neutron-server.service");
     $allinone->waitForUnit("nova-api.service");
+    $allinone->waitForOpenPort(8774);
+    $allinone->waitForUnit("nova-compute.service");
+    $allinone->waitForUnit("nova-conductor.service");
 
-    # setup openstack resources
+    # set up openstack resources
     $allinone->execute('/root/bootstrap.sh');
 
     # finish bridge networking on the host
