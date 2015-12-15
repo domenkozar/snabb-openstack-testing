@@ -85,7 +85,7 @@ in {
             after = [ "snabb-neutron-sync-master.service" ];
             wantedBy = [ "multi-user.target" ];
             # TODO: taskset/numa
-            serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv traffic pci=${portspec.pci} node=${portspec.node} cpu=${portspec.cpu} portid=${portspec.portid}";
+            serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv traffic -l 0 ${portspec.pci} /var/lib/neutron/port-${portspec.portid}.conf /var/vhost-user/%s.socket";
             # https://github.com/SnabbCo/snabbswitch/blob/master/src/program/snabbnfv/doc/installation.md#traffic-restarts
             serviceConfig.Restart = "on-failure";
           };
@@ -114,6 +114,10 @@ in {
           SYNC_PATH = "sync";
           SYNC_HOST = "127.0.0.1";
         };
+        preStart = ''
+          mkdir -p /var/snabbswitch/networks
+        '';
+
         serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-agent";
       };
     };
