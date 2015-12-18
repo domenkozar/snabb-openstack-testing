@@ -30,8 +30,9 @@ Preqrequisites:
 
 Preqrequisites:
 
-- You have installed VirtualBox on your machine and it's able to launch a guest VM.
-  (on NixOS use `virtualisation.virtualbox.host.enable = true;`)
+- You have installed libvirtd and it's running on your machine
+  (on NixOS use `virtualisation.libvirtd.enable = true;`)
+- You're in group to access libvirtd resources (on NixOS `libvirtd`)
 
 Install NixOps
 
@@ -43,20 +44,11 @@ Get the OpenStack NixOS modules
 
 Create NixOps deployment
 
-    $ nixops create -d openstack ./openstack.nix ./openstack-vbox.nix
-
-Build the deployment (we have to do it as separate step otherwise VirtualBox/Qemu fight for the driver)
-
-    $ nixops deploy -d openstack -I `pwd` --create-only -j 4
-    $ sudo modprobe pci-stub
-    $ VBoxManage modifyvm "11c0a2c1-8be9-4f50-9505-d8bc9280c3ef" --nestedpaging on
-    $ VBoxManage modifyvm "b3f79aa0-3985-43c1-b428-095624c6ea2d" --chipset ich9
-    $ VBoxManage modifyvm "b3f79aa0-3985-43c1-b428-095624c6ea2d" --pciattach 84:00.0@84:00.0
+    $ nixops create -d openstack ./openstack.nix ./openstack-libvirt.nix
 
 Deploy the cluster on VirtualBox
 
     $ nixops deploy -d openstack -I `pwd`
-
 
 Inside the VirtualBox guest run the bootstrapping script (sets up OpenStack resources)
 
