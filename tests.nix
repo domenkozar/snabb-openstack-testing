@@ -4,22 +4,42 @@ with import <nixpkgs/nixos/lib/testing.nix> { inherit system; };
 with import <nixpkgs/lib>;
 
 
-makeTest {
-  nodes = {
-    allinone = { config, pkgs, lib, ... }:
-    {
-      require = [ (import ./openstack.nix).allinone ];
-      virtualisation.memorySize = 2560;
-      virtualisation.diskSize = 2 * 1024;
-      virtualisation.qemu.options = optionals (builtins.getEnv "SKIP_PCI" == "") [
-        "-device pci-assign,host=${builtins.getEnv "SNABB_PCI0"},addr=0x15"
-        "-device pci-assign,host=${builtins.getEnv "SNABB_PCI1"},addr=0x16"
-      ];
-    };
+let
+  pkgs = import <nixpkgs> {};
+  lib = import <nixpkgs/lib>;
+  qemuFlags = optionalString (builtins.getEnv "SNABB_PCI0" != "") ''
+    -device pci-assign,host=${builtins.getEnv "SNABB_PCI0"},addr=0x15 -device pci-assign,host=${builtins.getEnv "SNABB_PCI1"},addr=0x16 -cpu host
+  '';
+  config = (import <nixpkgs/nixos/lib/eval-config.nix> {
+    inherit system;
+    modules = [
+      (import ./openstack.nix).allinone
+      {
+        fileSystems."/".device = "/dev/disk/by-label/nixos";
+        boot.loader.grub.device = "/dev/sda";
+        networking.hostName = "allinone";
+      }
+      <nixpkgs/nixos/modules/testing/test-instrumentation.nix>
+      <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
+    ];
+  }).config;
+  img = import <nixpkgs/nixos/lib/make-disk-image.nix> {
+    inherit pkgs lib config;
+    partitioned = true;
+    diskSize = 30 * 1024;
   };
+in makeTest {
+  name = "snabb-openstack-testing";
 
   testScript = ''
-    startAll;
+    # boot qemu with qcow2 image
+    my $imageDir = ($ENV{'TMPDIR'} // "/tmp") . "/vm-state-machine";
+    mkdir $imageDir, 0700;
+    my $diskImage = "$imageDir/machine.qcow2";
+    system("qemu-img create -f qcow2 -o backing_file=${img}/nixos.img $diskImage 30G") == 0 or die;
+
+    my $allinone = createMachine({name => "allinone", hda => "$diskImage", qemuFlags => '-m 16384 ${qemuFlags}' });
+    $allinone->start;
 
     # wait for all services to start
     $allinone->waitForUnit("keystone-all.service");
