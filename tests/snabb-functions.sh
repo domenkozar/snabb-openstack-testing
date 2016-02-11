@@ -61,7 +61,7 @@ function get_instance_ip {
 function zone_prereq {
     # create the flavor
     if [[ ! $(nova flavor-list | grep $INSTANCE_TYPE | get_field 1) ]]; then
-        nova flavor-create $INSTANCE_TYPE 999 1024 3 1
+        nova flavor-create $INSTANCE_TYPE 999 1024 8 1
     fi
     nova flavor-key $INSTANCE_TYPE set hw:mem_page_size=large
     nova flavor-key $INSTANCE_TYPE set hw:numa_nodes=1
