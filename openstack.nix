@@ -139,6 +139,8 @@
       nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
       nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
       #nova boot --flavor m1.tiny --image nixos --security-group default --key-name mykey public-instance
+
+      ifconfig eth1 203.0.113.1 up
     '';
     in {
       # Configure OpenStack
@@ -155,6 +157,9 @@
       networking.extraHosts = ''
         127.0.0.1 controller
         127.0.0.1 allinone
+      '';
+      networking.localCommands = ''
+        ip link add eth0 type veth peer name eth1
       '';
 
       # Configure Snabb
