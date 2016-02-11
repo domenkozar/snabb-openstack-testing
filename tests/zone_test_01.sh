@@ -48,9 +48,6 @@ ZONE_PORT_GBPS1="2.5"
 ZONE_PORT_ZONE1="1"
 ZONE_NETWORK_CIDR1="0::0/64"
 
-# Max timeout for pings
-PING_TIMEOUT=60
-
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 
@@ -125,6 +122,8 @@ VM_UUID=$(boot_instance $VM_NAME1 $INSTANCE_TYPE $IMAGE $SECGROUP $PRIVATE_NET_I
 
 # Check
 check_zone_port_binding $ZONE_PORT_ID1 $ZONE_PORT_GBPS1
+
+sleep 20
 
 # Get the instance IP
 IP=$(get_and_ping_ip $VM_UUID)

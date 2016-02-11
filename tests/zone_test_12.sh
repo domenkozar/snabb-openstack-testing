@@ -49,9 +49,6 @@ ZONE_PORT_GBPS="5.5"
 ZONE_PORT_ZONE="1"
 ZONE_NETWORK_CIDR="0::0/64"
 
-# Max timeout for pings
-PING_TIMEOUT=60
-
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 
@@ -135,6 +132,8 @@ IP1=$(get_and_ping_ip $VM_UUID1)
 ZONE_IP1=$(get_zone_port_ip $ZONE_PORT_ID1)
 IP2=$(get_and_ping_ip $VM_UUID2)
 ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
+
+sleep 10
 
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"

@@ -58,9 +58,6 @@ TRAFFIC_PCI2=${TRAFFIC_PCI2:-0000:07:00.1}
 TRAFFIC_NODE2=${TRAFFIC_NODE2:-0}
 TRAFFIC_CPU2=${TRAFIC_CPU2:-6}
 
-# Max timeout for pings
-PING_TIMEOUT=60
-
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 

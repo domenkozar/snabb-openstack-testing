@@ -4,6 +4,10 @@ TERMINATE_TIMEOUT=120
 ASSOCIATE_TIMEOUT=120
 PRIVATE_NETWORK_NAME="public"
 
+# Max timeout for pings
+PING_TIMEOUT=120
+
+
 # Some of these functions were copied from DevStack source
 
 function ping_check {
@@ -14,9 +18,9 @@ function ping_check {
     local check_command=""
     probe_cmd=`_get_probe_cmd_prefix $from_net`
     if [[ "$expected" = "True" ]]; then
-        check_command="while ! $probe_cmd ping -w 1 -c 1 $ip; do sleep 1; done"
+        check_command="while ! ping -w 1 -c 1 $ip; do sleep 1; done"
     else
-        check_command="while $probe_cmd ping -w 1 -c 1 $ip; do sleep 1; done"
+        check_command="while ping -w 1 -c 1 $ip; do sleep 1; done"
     fi
     if ! timeout $timeout_sec sh -c "$check_command"; then
         if [[ "$expected" = "True" ]]; then

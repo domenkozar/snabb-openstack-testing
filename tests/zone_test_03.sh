@@ -53,9 +53,6 @@ ZONE_PORT_GBPS2="5.5"
 ZONE_PORT_ZONE2="4"
 ZONE_NETWORK_CIDR2="2::0/64"
 
-# Max timeout for pings
-PING_TIMEOUT=60
-
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 

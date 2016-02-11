@@ -53,9 +53,6 @@ ZONE_NETWORK_CIDR="0::0/64"
 
 SERVER_PORT=2222
 
-# Max timeout for pings
-PING_TIMEOUT=60
-
 # Max time to wait while vm goes from build to active state
 ACTIVE_TIMEOUT=120
 
