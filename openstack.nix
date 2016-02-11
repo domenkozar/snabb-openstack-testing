@@ -193,11 +193,10 @@
       };
       boot.kernelParams = [ "hugepages=2048" ];
       boot.kernelModules = [ "br_netfilter" ];
+      boot.extraModprobeConfig = "options kvm-intel nested=y";
 
       # bridge networking uses dhcp https://github.com/NixOS/nixpkgs/issues/10101
       networking.firewall.enable = false;
-
-      boot.kernelParams = [ "hugepages=1024" ];
 
       environment.systemPackages = with pkgs.pythonPackages; with pkgs; [
         # OpenStack clients
