@@ -36,7 +36,7 @@ INSTANCE_TYPE=m1.zone
 DEFAULT_IMAGE_NAME="Ubuntu 14.04"
 DEFAULT_IMAGE_FILE=${DEFAULT_IMAGE_FILE:-"$TESTS_DIR/trusty-server-cloudimg-amd64-disk1.img"}
 L2TP_IMAGE_NAME="Centos 7"
-L2TP_IMAGE_FILE="CentOS-7-x86_64-GenericCloud.qcow2"
+L2TP_IMAGE_FILE="$TESTS_DIR/CentOS-7-x86_64-GenericCloud.qcow2"
 L2TP_SSH_USER="centos"
 
 # Security group name
