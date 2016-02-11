@@ -201,10 +201,11 @@
       environment.systemPackages = with pkgs.pythonPackages; with pkgs; [
         # OpenStack clients
         openstackclient novaclient glanceclient keystoneclient neutronclient
+        neutron
         # activationScripts
         iproute nettools bridge-utils
         # debugging
-        iptables tcpdump ebtables vim pciutils
+        iptables tcpdump ebtables vim pciutils telnet numactl
         # needed by tests
         jshon
       ];
@@ -216,7 +217,7 @@
         cp ${ubuntuImage} /root/tests/trusty-server-cloudimg-amd64-disk1.img
         cp ${centosImage} /root/tests/CentOS-7-x86_64-GenericCloud.qcow2
 
-        # copy over ssh keys 
+        # copy over ssh keys
         mkdir -p /root/.ssh/
         chmod 700 /root/.ssh
         cp ${sshKeys}/id_rsa /root/.ssh/
