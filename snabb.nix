@@ -93,31 +93,37 @@ in {
     in builtins.listToAttrs (map mkService cfg.ports) //
     {
       snabb-neutron-sync-master = {
-        description = "";
+        description = "Snabb ";
         after = [ "mysql.service" "neutron-server.service" ];
         wantedBy = [ "multi-user.target" ];
+        path = [ pkgs.mysql ];
         environment = {
           DB_USER = "neutron";
           DB_PASSWORD = "neutron";  # TODO: CHANGEME!
-          DB_DUMP_PATH = snabb_dump_path;
           DB_NEUTRON = "neutron";
+          DB_DUMP_PATH = snabb_dump_path;
         };
+        preStart = ''
+          mkdir -p -m 777 ${snabb_dump_path}
+          mysql -u root -N -e "GRANT FILE ON *.* TO 'neutron'@'localhost';"
+        '';
         serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-master";
       };
 
       snabb-neutron-sync-agent = {
-        description = "";
+        description = "Snabb Agent";
         wantedBy = [ "multi-user.target" ];
         environment = {
-          NEUTRON_DIR = "/var/lib/neutron";
+          NEUTRON_DIR = "/var/snabbswitch/networks";
           NEUTRON2SNABB = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron2snabb";
           SYNC_PATH = "sync";
-          SYNC_HOST = "127.0.0.1";
+          SYNC_HOST = "localhost";
+          SNABB_DIR = "/var/snabbswitch/ports" ;
         };
         preStart = ''
-          mkdir -p /var/snabbswitch/networks
+          mkdir -p -m 777 /var/snabbswitch/networks
+          mkdir -p -m 777 /var/snabbswitch/ports
         '';
-
         serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-agent";
       };
     };
