@@ -188,7 +188,10 @@
         "net.bridge.bridge-nf-call-ip6tables" = 1;
         "net.bridge.bridge-nf-filter-vlan-tagged" = 0;
         "net.bridge.bridge-nf-filter-pppoe-tagged" = 0;
+        # hugepages are a requirement
+        "vm.nr_hugepages" = 2048;
       };
+      boot.kernelParams = [ "hugepages=2048" ];
       boot.kernelModules = [ "br_netfilter" ];
 
       # bridge networking uses dhcp https://github.com/NixOS/nixpkgs/issues/10101
