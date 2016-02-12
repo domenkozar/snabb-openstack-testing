@@ -285,7 +285,7 @@ function ip_execute_cmd {
     local cmd="$2"
     SSH_USER=${SSH_USER:-ubuntu}
 
-    ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER@$ip "$cmd"
+    ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER@$ip "$cmd"
 }
 
 function vm_execute_cmd {
