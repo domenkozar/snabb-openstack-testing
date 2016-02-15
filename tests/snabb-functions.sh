@@ -5,7 +5,8 @@ ASSOCIATE_TIMEOUT=120
 PRIVATE_NETWORK_NAME="public"
 
 # Max timeout for pings
-PING_TIMEOUT=120
+PING_TIMEOUT=320
+SSH_TIMEOUT=120
 
 
 # Some of these functions were copied from DevStack source
@@ -41,6 +42,17 @@ function _get_probe_cmd_prefix {
     net_id=`_get_net_id $from_net`
     probe_id=`neutron-debug probe-list -c id -c network_id | grep $net_id | awk '{print $2}' | head -n 1`
     echo "ip netns exec qprobe-$probe_id"
+}
+
+
+# wait until port can be reached or timeout with an error
+function wait_for_port {
+    local ip="$1"
+    local port="$2"
+
+    if ! timeout $SSH_TIMEOUT sh -c "while ! nc -z $ip $port; do sleep 0.5; done"; then
+        die $LINENO "SSH at $ip:$port timedout after $timeout_sec"
+    fi
 }
 
 
@@ -284,6 +296,8 @@ function ip_execute_cmd {
     local ip=$1
     local cmd="$2"
     SSH_USER=${SSH_USER:-ubuntu}
+
+    wait_for_port $ip 22
 
     ssh -tt -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $SSH_USER@$ip "$cmd"
 }
