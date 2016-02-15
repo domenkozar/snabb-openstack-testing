@@ -317,10 +317,16 @@ function delete_net {
     local net_name=$1
     local net_ids=$(neutron net-list -c id -c name | awk '$4=='"$net_name"'{ print $2 }')
     for net_id in $net_ids;do
-        neutron subnet-list | grep $net_id | awk '{print $2}' | xargs -I% neutron subnet-delete %
+        # we have to clear zone ports before net is deleted otherwise we get an error
+        for subnet_id in $(neutron net-list | grep $net_id | get_field 3 |  awk '{print $1}'); do
+            for port_id in $(neutron port-list | grep $subnet_id | get_field 1); do
+                clear_zone_port $port_id
+            done
+        done
         neutron net-delete $net_id
     done
 }
+
 
 function delete_secgroup {
     local secgroup_name=$1
