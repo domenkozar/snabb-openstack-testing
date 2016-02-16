@@ -143,12 +143,10 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 
 # SERVER running on VM1 on IP1
 ip_execute_cmd $IP1 "while true; do nc -6 -vd -l $SERVER_PORT > /dev/null ; done" &
 SERVER_PID=$!
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -163,7 +161,6 @@ SEC_RULE_UUID=$(create_sec_rule --ethertype ipv6 \
     --port-range-min $SERVER_PORT \
     --port-range-max $SERVER_PORT \
     --direction ingress $SECGROUP)
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"

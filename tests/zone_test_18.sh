@@ -145,12 +145,10 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 
 # SERVER running on VM1 on IP1
 ip_execute_cmd $IP1 "while true; do nc -6 -vd -l $SERVER_PORT > /dev/null ; done" &
 SERVER_PID=$!
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -165,7 +163,6 @@ SEC_RULE_UUID=$(create_sec_rule --ethertype ipv6 \
     --port-range-min $SERVER_PORT \
     --port-range-max $SERVER_PORT \
     --direction ingress $SECGROUP)
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -179,7 +176,6 @@ neutron port-update $ZONE_PORT_ID1 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,packetfilter=stateless
 neutron port-update $ZONE_PORT_ID2 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,packetfilter=stateless
-sleep 10
 
 if ip_execute_cmd $IP2 "echo \"Test\" | nc -v $ZONE_IP1 $SERVER_PORT"; then
     die $LINENO "Failure port should not be reachable"

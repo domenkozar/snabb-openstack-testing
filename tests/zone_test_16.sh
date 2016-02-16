@@ -150,14 +150,12 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 
 # SERVER running on VM1 on IP1
 ip_execute_cmd $IP1 "while true; do nc -6 -vd -l $SERVER_PORT1 > /dev/null ; done" &
 SERVER_PID1=$!
 ip_execute_cmd $IP1 "while true; do nc -6 -vd -l $SERVER_PORT2 > /dev/null ; done" &
 SERVER_PID2=$!
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -177,7 +175,6 @@ SEC_RULE_UUID1=$(create_sec_rule --ethertype ipv6 \
 			       --port-range-min $SERVER_PORT1 \
                                --port-range-max $SERVER_PORT1 \
                                --direction ingress $SECGROUP)
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -198,7 +195,6 @@ SEC_RULE_UUID2=$(create_sec_rule --ethertype ipv6 \
 			       --port-range-min $SERVER_PORT2 \
                                --port-range-max $SERVER_PORT2 \
                                --direction ingress $SECGROUP)
-sleep 10
 
 ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c3 $ZONE_IP1"
@@ -214,7 +210,6 @@ if ! ip_execute_cmd $IP2 "echo \"Test\" | nc -w1 -v $ZONE_IP1 $SERVER_PORT2"; th
 fi
 
 delete_sec_rule $SEC_RULE_UUID1
-sleep 10
 
 # First server is not reachable
 if ip_execute_cmd $IP2 "echo \"Test\" | nc -w1 -v $ZONE_IP1 $SERVER_PORT1"; then
@@ -227,7 +222,6 @@ if ! ip_execute_cmd $IP2 "echo \"Test\" | nc -w1 -v $ZONE_IP1 $SERVER_PORT2"; th
 fi
 
 delete_sec_rule $SEC_RULE_UUID2
-sleep 10
 
 # Both servers are not reachable
 if ip_execute_cmd $IP2 "echo \"Test\" | nc -w1 -v $ZONE_IP1 $SERVER_PORT1"; then

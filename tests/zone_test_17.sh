@@ -137,7 +137,6 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/24 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/24 dev eth1"
-sleep 10
 ip_execute_cmd $IP1 "ping -c10 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping -c10 $ZONE_IP1"
 

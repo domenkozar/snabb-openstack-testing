@@ -5,8 +5,8 @@ ASSOCIATE_TIMEOUT=120
 PRIVATE_NETWORK_NAME="public"
 
 # Max timeout for pings
-PING_TIMEOUT=320
-SSH_TIMEOUT=120
+PING_TIMEOUT=360
+SSH_TIMEOUT=360
 
 
 # Some of these functions were copied from DevStack source

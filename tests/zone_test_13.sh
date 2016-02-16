@@ -144,7 +144,6 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c10 $ZONE_IP1"
 
@@ -157,7 +156,6 @@ systemctl start snabb-neutron-sync-master
 systemctl start snabb-neutron-sync-agent
 systemctl start snabb-nfv-traffic-0
 systemctl start snabb-nfv-traffic-1
-sleep 10
 
 # check connectivity
 ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"

@@ -145,8 +145,6 @@ do
     ZONE_IP=$(get_zone_port_ip $ZONE_PORT_ID)
     ZONE_IPS="$ZONE_IPS $ZONE_IP"
 
-    sleep 8
-
     # SSH to the VM and setup the
     ip_execute_cmd $IP "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP/64 dev eth1"
 done

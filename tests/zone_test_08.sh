@@ -143,11 +143,9 @@ ZONE_IP1=$(get_zone_port_ip $ZONE_PORT_ID1)
 IP2=$(get_and_ping_ip $VM_UUID2)
 ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 
-sleep 30
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 SSH_USER=$L2TP_SSH_USER ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"
 SSH_USER=$L2TP_SSH_USER ip_execute_cmd $IP2 "ping6 -c10 $ZONE_IP1"
 
@@ -159,7 +157,6 @@ SSH_USER=$L2TP_SSH_USER ip_execute_cmd $IP2 "sudo ifconfig l2tpeth0 up"
 
 neutron port-update $ZONE_PORT_ID1 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,tunnel_type=L2TPv3,l2tpv3_next_hop=$ZONE_IP2,l2tpv3_remote_ip=$ZONE_IP2,l2tpv3_session=1,l2tpv3_local_cookie=00000000,l2tpv3_remote_cookie=00000000
-sleep 10
 
 ip_execute_cmd $IP1 "sudo ifconfig eth1 1.1.1.1 up"
 SSH_USER=$L2TP_SSH_USER ip_execute_cmd $IP2 "sudo ifconfig l2tpeth0 1.1.1.2 up; ping -c10 1.1.1.1"

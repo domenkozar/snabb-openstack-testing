@@ -138,14 +138,12 @@ ZONE_IP2=$(get_zone_port_ip $ZONE_PORT_ID2)
 # SSH to the VM and setup the
 ip_execute_cmd $IP1 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP1/64 dev eth1"
 ip_execute_cmd $IP2 "sudo ifconfig eth1 up; sudo ip addr add $ZONE_IP2/64 dev eth1"
-sleep 10
 ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"
 ip_execute_cmd $IP2 "ping6 -c10 $ZONE_IP1"
 
 # Enable one sided tunnel
 neutron port-update $ZONE_PORT_ID1 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,tunnel_type=L2TPv3,l2tpv3_next_hop=$ZONE_IP2,l2tpv3_remote_ip=$ZONE_IP2,l2tpv3_session=1,l2tpv3_local_cookie=00000000,l2tpv3_remote_cookie=00000000
-sleep 10
 
 # Ping should not pass yet, the tunnel still not established
 if ip_execute_cmd $IP1 "ping6 -c3 $ZONE_IP2"; then
@@ -155,7 +153,6 @@ fi
 # Enable second side of the tunnel
 neutron port-update $ZONE_PORT_ID2 \
     --binding:profile type=dict zone_gbps=$ZONE_PORT_GBPS,tunnel_type=L2TPv3,l2tpv3_next_hop=$ZONE_IP1,l2tpv3_remote_ip=$ZONE_IP1,l2tpv3_session=1,l2tpv3_local_cookie=00000000,l2tpv3_remote_cookie=00000000
-sleep 10
 
 # Ping should pass in both directions
 ip_execute_cmd $IP1 "ping6 -c10 $ZONE_IP2"
