@@ -72,6 +72,19 @@ in {
           sha256 = "0hpnfdk96rrdaaf6qr4m4pgv40dw7r53mg95f22axj7nsyr8d72x";
         })];
       });
+      snabbswitch = pkgs.snabbswitch.overrideDerivation (super: {
+        name = "snabbswitch-dev";
+        src = pkgs.fetchFromGitHub {
+          owner = "domenkozar";
+          repo = "snabbswitch";
+          rev = "d2ee06562073307fed0a80f1de862c3c31963791";
+          sha256 = "06sn9daa2h2isjqnp163lr1x81ih14j5gxjg5x9s4jfxf7p22m78";
+        };
+        preConfigure = ''
+          make clean
+        '';
+        buildInputs = super.buildInputs ++ [ pkgs.git ];
+      });
     };
 
 
