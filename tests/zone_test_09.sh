@@ -112,10 +112,10 @@ nova flavor-list
 
 #update nova quota for instances and ips
 quota=$(($VM_NUM+10))
-tenant_id=$(keystone tenant-list |  awk '/ demo / {print $2}')
-nova quota-update --instances $quota --floating_ips $quota --cores $quota $tenant_id
+tenant_id=$(openstack user list | grep demo | get_field 1)
+nova quota-update --instances $quota --cores $quota $tenant_id
 nova quota-show --tenant $tenant_id
-neutron quota-update --floatingip $(($quota*2)) --port $(($quota*2)) --tenant-id $tenant_id
+neutron quota-update --port $(($quota*2)) --tenant-id $tenant_id
 neutron quota-show --tenant-id $tenant_id
 
 for (( i=1; i<=$VM_NUM; i++ ))
