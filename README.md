@@ -1,19 +1,25 @@
 [Snabb Switch](https://github.com/SnabbCo/snabbswitch) functional testing suite for [OpenStack](https://www.openstack.org/) integration using [NixOS](http://nixos.org/)
 
 
+Prerequisites for the host (Linux):
+
+- pass `intel_iommu=on` as kernel parameter on host machine where tests are being ran.
+- hugepages are configured
+- PCI devices are not assigned (`rmmod ixgbe`)
+- `kvm-intel` kernel module is loaded with `nested=1` parameter
+
+Prerequisites for the host (NixOS):
+
+    boot.kernelModules = [ "kvm-intel nested=1" "pci-stub" ];
+    boot.kernelParams = [ "intel_iommu=on" "hugepages=4096" ];
+
+
+
 # Running tests (with Docker)
 
 Tests can be executed inside a docker container. Docker container ships with all software needed for tests execution.
 
 Docker runs NixOS tests in QEMU machine with OpenStack installed.
-
-Preqrequisites:
-
-- pass `intel_iommu=on` as kernel parameter on host machine where tests are being ran.
-- PCI devices are not assigned (`rmmod ixgbe`)
-
-
-## Run the tests
 
     $ docker run --rm --privileged -ti -e SNABB_PCI0="84:00.0" -e SNABB_PCI1="84:00.1" domenkozar/snabb-openstack-testing
 
@@ -28,7 +34,7 @@ Preqrequisites:
 
 ## Debugging tests
 
-Preqrequisites:
+Prerequisites:
 
 - You have installed libvirtd and it's running on your machine
   (on NixOS use `virtualisation.libvirtd.enable = true;`)
