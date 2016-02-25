@@ -118,7 +118,8 @@ die_if_not_set $LINENO PRIVATE_NET_ID "Failure getting private net-id $PRIVATE_N
 
 # Boot instance
 # -------------
-VM_UUID=$(boot_instance_vmuid $VM_NAME1 $INSTANCE_TYPE $IMAGE $SECGROUP $PRIVATE_NET_ID $ZONE_PORT_ID1)
+# https://bugs.launchpad.net/neutron/+bug/1527061
+VM_UUID=$(boot_instance_vmuid $VM_NAME1 $INSTANCE_TYPE $IMAGE "default" $PRIVATE_NET_ID $ZONE_PORT_ID1)
 
 if ! timeout $ACTIVE_TIMEOUT sh -c "while ! nova show $VM_UUID | grep status | grep -q ERROR; do sleep 2; done"; then
     die $LINENO "VM became active, while it shouldn't!"
