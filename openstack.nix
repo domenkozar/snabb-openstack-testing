@@ -26,7 +26,7 @@
          }).config.system.build.novaImage;
     ubuntuImage = pkgs.fetchurl {
       url = "http://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img";
-      sha256 = "1fsxbrpbmmr91i5yqfmy29y30rj78rahn3pq14y2l37bfpfb55cp";
+      sha256 = "1qppjr762jsvg0azdv5avmqxdpc9nwprjvvfvg7ipwvmgcdz405f";
     };
     centosImage = pkgs.fetchurl {
       url = "http://cloud.centos.org/centos/7/devel/CentOS-7-x86_64-GenericCloud.qcow2";
