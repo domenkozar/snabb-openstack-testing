@@ -189,9 +189,9 @@
         "net.bridge.bridge-nf-filter-vlan-tagged" = 0;
         "net.bridge.bridge-nf-filter-pppoe-tagged" = 0;
         # hugepages are a requirement
-        "vm.nr_hugepages" = 2048;
+        "vm.nr_hugepages" = 4096;
       };
-      boot.kernelParams = [ "hugepages=2048" ];
+      boot.kernelParams = [ "hugepages=4096" ];
       boot.kernelModules = [ "br_netfilter" ];
       boot.extraModprobeConfig = "options kvm-intel nested=y";
 
