@@ -43,7 +43,7 @@ SECGROUP=${SECGROUP:-test_secgroup}
 
 # Instance name
 VM_NAME="vm"
-VM_NUM=${VM_NUM:-32}
+VM_NUM=${VM_NUM:-7}
 
 # ZONE network and port names
 ZONE_NET_NAME="1"

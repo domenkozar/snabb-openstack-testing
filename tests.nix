@@ -73,9 +73,9 @@ in makeTest {
       $allinone->succeed('/root/tests/zone_test_04.sh');
     };
 
-   subtest "2xVM on different physical port", sub {
-     $allinone->succeed('/root/tests/zone_test_05.sh');
-   };
+    subtest "2xVM on different physical port", sub {
+      $allinone->succeed('/root/tests/zone_test_05.sh');
+    };
 
     subtest "2xVM with security group restrictions", sub {
       $allinone->succeed('/root/tests/zone_test_06.sh');
