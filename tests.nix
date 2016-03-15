@@ -26,7 +26,7 @@ let
   img = import <nixpkgs/nixos/lib/make-disk-image.nix> {
     inherit pkgs lib config;
     partitioned = true;
-    diskSize = 30 * 1024;
+    diskSize = 80 * 1024;
   };
 in makeTest {
   name = "snabb-openstack-testing";
@@ -36,9 +36,9 @@ in makeTest {
     my $imageDir = ($ENV{'TMPDIR'} // "/tmp") . "/vm-state-machine";
     mkdir $imageDir, 0700;
     my $diskImage = "$imageDir/machine.qcow2";
-    system("qemu-img create -f qcow2 -o backing_file=${img}/nixos.img $diskImage 30G") == 0 or die;
+    system("qemu-img create -f qcow2 -o backing_file=${img}/nixos.img $diskImage 80G") == 0 or die;
 
-    my $allinone = createMachine({name => "allinone", hda => "$diskImage", qemuFlags => '-m 16384 ${qemuFlags}' });
+    my $allinone = createMachine({name => "allinone", hda => "$diskImage", qemuFlags => '-m 21504 ${qemuFlags}' });
     $allinone->start;
 
     # wait for all services to start
