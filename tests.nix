@@ -28,7 +28,7 @@ let
     inherit lib config;
     pkgs = import <nixpkgs> {};
     partitioned = true;
-    diskSize = 80 * 1024;
+    diskSize = 4 * 1024;
   };
 in makeTest {
   name = "snabb-openstack-testing";
