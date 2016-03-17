@@ -1,14 +1,15 @@
-{ system ? builtins.currentSystem }:
+{ system ? builtins.currentSystem
+, pci1 ? builtins.getEnv "SNABB_PCI1"
+, pci0 ? builtins.getEnv "SNABB_PCI0"
+}:
 
 with import <nixpkgs/nixos/lib/testing.nix> { inherit system; };
-with import <nixpkgs/lib>;
 
 
 let
-  pkgs = import <nixpkgs> {};
   lib = import <nixpkgs/lib>;
-  qemuFlags = optionalString (builtins.getEnv "SNABB_PCI0" != "") ''
-    -device pci-assign,host=${builtins.getEnv "SNABB_PCI0"},addr=0x15 -device pci-assign,host=${builtins.getEnv "SNABB_PCI1"},addr=0x16 -cpu host
+  qemuFlags = lib.optionalString (pci0 != "") ''
+    -device pci-assign,host=${pci0},addr=0x15 -device pci-assign,host=${pci0},addr=0x16 -cpu host
   '';
   config = (import <nixpkgs/nixos/lib/eval-config.nix> {
     inherit system;
@@ -24,7 +25,8 @@ let
     ];
   }).config;
   img = import <nixpkgs/nixos/lib/make-disk-image.nix> {
-    inherit pkgs lib config;
+    inherit lib config;
+    pkgs = import <nixpkgs> {};
     partitioned = true;
     diskSize = 80 * 1024;
   };
