@@ -30,7 +30,7 @@ let
     partitioned = true;
     diskSize = 4 * 1024;
   };
-in makeTest {
+in (makeTest {
   name = "snabb-openstack-testing";
 
   testScript = ''
@@ -131,4 +131,4 @@ in makeTest {
       $allinone->succeed('/root/tests/zone_test_18.sh');
     };
   '';
-}
+}) // {requiredSystemFeatures = [ "openstack" ];}
