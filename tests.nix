@@ -30,7 +30,7 @@ let
     partitioned = true;
     diskSize = 80 * 1024;
   };
-in (makeTest {
+in lib.overrideDerivation (makeTest {
   name = "snabb-openstack-testing";
 
   testScript = ''
@@ -131,4 +131,4 @@ in (makeTest {
       $allinone->succeed('/root/tests/zone_test_18.sh');
     };
   '';
-}) // {requiredSystemFeatures = [ "openstack" ];}
+}) (attrs: {requiredSystemFeatures = [ "openstack" "kvm" ];})
