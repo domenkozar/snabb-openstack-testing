@@ -9,7 +9,7 @@ with import <nixpkgs/nixos/lib/testing.nix> { inherit system; };
 let
   lib = import <nixpkgs/lib>;
   qemuFlags = lib.optionalString (pci0 != "") ''
-    -device pci-assign,host=${pci0},addr=0x15 -device pci-assign,host=${pci0},addr=0x16 -cpu host
+    -device pci-assign,host=${pci0},addr=0x15 -device pci-assign,host=${pci1},addr=0x16 -cpu host
   '';
   config = (import <nixpkgs/nixos/lib/eval-config.nix> {
     inherit system;
