@@ -219,9 +219,8 @@
 
         # copy over ssh keys
         mkdir -p /root/.ssh/
-        chmod 700 /root/.ssh
         cp ${sshKeys}/id_rsa /root/.ssh/
-        chmod 700 /root/.ssh/id_rsa
+        chmod 700 /root/.ssh/{,id_rsa}
         cp ${sshKeys}/id_rsa.pub /root/.ssh/
       '';
     };
