@@ -3,7 +3,24 @@
 , pci0 ? builtins.getEnv "SNABB_PCI0"
 }:
 
-with import <nixpkgs/nixos/lib/testing.nix> { inherit system; };
+with import <nixpkgs/nixos/lib/testing.nix> {
+  inherit system;
+  config = {
+    packageOverrides = pkgs: {
+      qemu_kvm = pkgs.qemu_kvm.overrideDerivation (super: {
+        # let's make sure qemu is called as sudo to have permissions for pci-assign
+        # this requires sudo-in-builds.nix to be deployed on the server running these tests
+        postFixup = ''
+          for f in $out/bin/*; do
+            f_hidden="$(dirname "$f")/.$(basename "$f")"-nonsudo
+            mv $f $f_hidden
+            makeWrapper "/var/setuid-wrappers/sudo $f_hidden" $f --argv0 '"$0"' "$@"
+          done
+        '';
+      });
+    };
+  };
+};
 
 
 let
@@ -131,4 +148,4 @@ in lib.overrideDerivation (makeTest {
       $allinone->succeed('/root/tests/zone_test_18.sh');
     };
   '';
-}) (attrs: {requiredSystemFeatures = [ "openstack" "kvm" ];})
+}) (attrs: { __noChroot = true; requiredSystemFeatures = [ "openstack" "kvm" ];})
