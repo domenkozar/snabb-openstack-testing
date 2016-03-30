@@ -165,4 +165,4 @@ in lib.overrideDerivation (makeTest {
       $allinone->succeed('/root/tests/zone_test_18.sh');
     };
   '';
-}) (attrs: { __noChroot = true; requiredSystemFeatures = [ "openstack" "kvm" ];})
+}) (attrs: { __noChroot = true; requiredSystemFeatures = [ "openstack" "kvm" ]; inherit (attrs) driver;})
