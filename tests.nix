@@ -41,12 +41,12 @@ let
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
     ];
   }).config;
-  img = import <nixpkgs/nixos/lib/make-disk-image.nix> {
+  img = lib.overrideDerivation (import <nixpkgs/nixos/lib/make-disk-image.nix> {
     inherit lib config;
     pkgs = import <nixpkgs> {};
     partitioned = true;
     diskSize = 80 * 1024;
-  };
+  }) (super: {requiredSystemFeatures = [ "openstack" ];});
 in lib.overrideDerivation (makeTest {
   name = "snabb-openstack-testing";
 
