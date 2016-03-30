@@ -32,11 +32,27 @@ let
     inherit system;
     modules = [
       (import ./openstack.nix).allinone
-      {
+      ({
         fileSystems."/".device = "/dev/disk/by-label/nixos";
         boot.loader.grub.device = "/dev/sda";
         networking.hostName = "allinone";
-      }
+      })
+      # NixOS module for auto growing root partition
+      ({
+        fileSystems."/".autoResize = true;
+        boot.initrd.extraUtilsCommands = ''
+          copy_bin_and_libs ${pkgs.gawk}/bin/gawk
+          copy_bin_and_libs ${pkgs.gnused}/bin/sed
+          copy_bin_and_libs ${pkgs.utillinux}/sbin/sfdisk
+          cp -v ${pkgs.cloud-utils}/bin/growpart $out/bin/growpart
+          ln -s sed $out/bin/gnused
+        '';
+    
+        boot.initrd.postDeviceCommands = ''
+          TMPDIR=/run sh $(type -P growpart) /dev/vda 1
+          udevadm settle
+        '';
+      })
       <nixpkgs/nixos/modules/testing/test-instrumentation.nix>
       <nixpkgs/nixos/modules/profiles/qemu-guest.nix>
     ];
@@ -45,7 +61,7 @@ let
     inherit lib config;
     pkgs = import <nixpkgs> {};
     partitioned = true;
-    diskSize = 80 * 1024;
+    diskSize = 4 * 1024;
   }) (super: {requiredSystemFeatures = [ "openstack" ];});
 in lib.overrideDerivation (makeTest {
   name = "snabb-openstack-testing";
@@ -56,6 +72,7 @@ in lib.overrideDerivation (makeTest {
     mkdir $imageDir, 0700;
     my $diskImage = "$imageDir/machine.qcow2";
     system("qemu-img create -f qcow2 -o backing_file=${img}/nixos.img $diskImage 80G") == 0 or die;
+    system("qemu-img resize $diskImage 80G") == 0 or die;
 
     my $allinone = createMachine({name => "allinone", hda => "$diskImage", qemuFlags => '-m 21504 ${qemuFlags}' });
     $allinone->start;
