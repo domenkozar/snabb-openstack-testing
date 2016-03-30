@@ -7,23 +7,6 @@
         mkdir -p $out
         ${pkgs.openssh}/bin/ssh-keygen -q -N "" -f $out/id_rsa
       '';
-      image =
-         (import <nixpkgs/nixos/lib/eval-config.nix> {
-           system = builtins.currentSystem;
-           modules = [
-             <nixpkgs/nixos/modules/virtualisation/nova-image.nix>
-             {
-               boot.initrd.kernelModules = [ "virtio" "virtio_blk" "virtio_pci" "virtio_ring" ];
-               # Hack to make the partition resizing work in QEMU.
-               boot.initrd.postDeviceCommands = lib.mkBefore
-                 ''
-                   ln -s vda /dev/xvda
-                   ln -s vda1 /dev/xvda1
-                 '';
-               users.extraUsers.root.openssh.authorizedKeys.keys = [ (builtins.readFile "${sshKeys}/id_rsa.pub") ];
-             }
-           ];
-         }).config.system.build.novaImage;
     ubuntuImage = pkgs.fetchurl {
       url = "http://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img";
       sha256 = "1qppjr762jsvg0azdv5avmqxdpc9nwprjvvfvg7ipwvmgcdz405f";
@@ -90,7 +73,7 @@
       openstack endpoint create --region RegionOne image admin http://localhost:9292
 
       ## Verify
-      #glance image-create --name "nixos" --file ${image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
+      #glance image-create --name "nixos" --file {image}/nixos.img --disk-format qcow2 --container-format bare --visibility public
       #glance image-list
 
       # Nova
