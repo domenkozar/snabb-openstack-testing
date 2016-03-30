@@ -61,7 +61,7 @@ let
     inherit lib config;
     pkgs = import <nixpkgs> {};
     partitioned = true;
-    diskSize = 4 * 1024;
+    diskSize = 4 * 1000;
   }) (super: {requiredSystemFeatures = [ "openstack" ];});
 in lib.overrideDerivation (makeTest {
   name = "snabb-openstack-testing";
