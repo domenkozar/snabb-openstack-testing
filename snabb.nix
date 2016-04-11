@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 
-# Start with https://github.com/SnabbCo/snabbswitch/tree/master/src/program/snabbnfv/doc
+# Start with https://github.com/SnabbCo/snabb/tree/master/src/program/snabbnfv/doc
 
 with lib;
 
@@ -24,14 +24,14 @@ let
 
   };
   snabb_dump_path = "/var/lib/snabb/sync";
-  cfg = config.services.snabbswitch;
+  cfg = config.services.snabb;
 in {
-  options.services.snabbswitch = {
+  options.services.snabb = {
       enable = mkOption {
         type = types.bool;
         default = false;
         description = ''
-          Whether to enable snabbswitch NFV integration for Neutron.
+          Whether to enable snabb NFV integration for Neutron.
         '';
       };
       ports = mkOption {
@@ -72,8 +72,8 @@ in {
           sha256 = "0hpnfdk96rrdaaf6qr4m4pgv40dw7r53mg95f22axj7nsyr8d72x";
         })];
       });
-      snabbswitch = pkgs.snabbswitch.overrideDerivation (super: {
-        name = "snabbswitch-dev";
+      snabb = pkgs.snabb.overrideDerivation (super: {
+        name = "snabb-dev";
         src = pkgs.fetchFromGitHub {
           owner = "domenkozar";
           repo = "snabbswitch";
@@ -98,8 +98,8 @@ in {
             after = [ "snabb-neutron-sync-master.service" ];
             wantedBy = [ "multi-user.target" ];
             # TODO: taskset/numa
-            serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv traffic -k 30 -l 10 ${portspec.pci} /var/snabbswitch/ports/port${portspec.portid} /var/lib/libvirt/qemu/%%s.socket";
-            # https://github.com/SnabbCo/snabbswitch/blob/master/src/program/snabbnfv/doc/installation.md#traffic-restarts
+            serviceConfig.ExecStart = "${pkgs.snabb}/bin/snabb snabbnfv traffic -k 30 -l 10 ${portspec.pci} /var/snabbswitch/ports/port${portspec.portid} /var/lib/libvirt/qemu/%%s.socket";
+            # https://github.com/SnabbCo/snabb/blob/master/src/program/snabbnfv/doc/installation.md#traffic-restarts
             serviceConfig.Restart = "on-failure";
           };
         };
@@ -120,7 +120,7 @@ in {
           mkdir -p -m 777 ${snabb_dump_path}
           mysql -u root -N -e "GRANT FILE ON *.* TO 'neutron'@'localhost';"
         '';
-        serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-master";
+        serviceConfig.ExecStart = "${pkgs.snabb}/bin/snabb snabbnfv neutron-sync-master";
       };
 
       snabb-neutron-sync-agent = {
@@ -128,7 +128,7 @@ in {
         wantedBy = [ "multi-user.target" ];
         environment = {
           NEUTRON_DIR = "/var/snabbswitch/networks";
-          NEUTRON2SNABB = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron2snabb";
+          NEUTRON2SNABB = "${pkgs.snabb}/bin/snabb snabbnfv neutron2snabb";
           SYNC_PATH = "sync";
           SYNC_HOST = "localhost";
           SNABB_DIR = "/var/snabbswitch/ports" ;
@@ -137,7 +137,7 @@ in {
           mkdir -p -m 777 /var/snabbswitch/networks
           mkdir -p -m 777 /var/snabbswitch/ports
         '';
-        serviceConfig.ExecStart = "${pkgs.snabbswitch}/bin/snabb snabbnfv neutron-sync-agent";
+        serviceConfig.ExecStart = "${pkgs.snabb}/bin/snabb snabbnfv neutron-sync-agent";
       };
     };
   };

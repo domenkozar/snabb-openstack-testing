@@ -147,8 +147,8 @@
 
       # Configure Snabb
       require = [ ./snabb.nix ];
-      services.snabbswitch.enable = true;
-      services.snabbswitch.ports = [
+      services.snabb.enable = true;
+      services.snabb.ports = [
         {
           pci = "0000:00:15.0";
           node = "1";
