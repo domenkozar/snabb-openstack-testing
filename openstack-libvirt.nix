@@ -23,6 +23,10 @@
           <address type="pci" domain='0x0000' bus='0x0' slot='0x16' function='0x0'/>
         </hostdev>
       '';
+      deployment.libvirtd.extraDomainXML = ''
+        <cpu mode="host-model">
+        </cpu>
+      '';
       deployment.libvirtd.headless = true;
     };
 }
